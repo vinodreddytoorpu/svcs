@@ -2,7 +2,6 @@ use std::path::{PathBuf};
 use tracing_subscriber::{Layer};
 use tracing_subscriber::prelude::*;
 use std::fs::OpenOptions;
-use std::io;
 
 pub struct Logger {
     log_dir: PathBuf,
