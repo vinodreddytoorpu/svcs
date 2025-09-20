@@ -299,14 +299,14 @@ impl fmt::Display for Token {
 }
 
 /// Easy-to-use API for creating a lexer with default plugins
-pub fn create_default_lexer(input: &str, file_path: String) -> SystemVerilogLexer {
+pub fn create_default_lexer(input: &str, file_path: String) -> SystemVerilogLexer<'_> {
     LexerBuilder::new()
         .with_default_plugins()
         .build(input, file_path)
 }
 
 /// Easy-to-use API for creating a minimal lexer
-pub fn create_minimal_lexer(input: &str, file_path: String) -> SystemVerilogLexer {
+pub fn create_minimal_lexer(input: &str, file_path: String) -> SystemVerilogLexer<'_> {
     LexerBuilder::new()
         .with_plugin(Box::new(plugins::GeneralPlugin::default()))
         .build(input, file_path)
