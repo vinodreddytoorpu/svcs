@@ -43,7 +43,21 @@ pub enum Token {
     EndGenerate,
     #[token("genvar")]
     GenVar,
-    
+
+    // Function/task/class tokens
+    #[token("function")]
+    Function,
+    #[token("endfunction")]
+    EndFunction,
+    #[token("task")]
+    Task,
+    #[token("endtask")]
+    EndTask,
+    #[token("class")]
+    Class,
+    #[token("endclass")]
+    EndClass,
+
     // Interface tokens
     #[token("interface")]
     Interface,
@@ -247,6 +261,8 @@ pub enum Token {
     Decrement,
     
     // General tokens
+    #[token("assign")]
+    AssignKeyword,
     #[regex(r"[a-zA-Z_][a-zA-Z0-9_$]*")]
     Identifier,
     #[regex(r"\$[a-zA-Z_][a-zA-Z0-9_$]*")]

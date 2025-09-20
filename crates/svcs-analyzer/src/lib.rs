@@ -1,7 +1,6 @@
-//! SVCS Analyzer Library
-//! 
-//! This crate provides semantic analysis for the SVCS SystemVerilog compiler.
+use svcs_parser::Cst;
 
-pub fn placeholder() {
-    println!("This is a placeholder function for the {} crate", env!("CARGO_PKG_NAME"));
+pub fn analyze(_cst: &Cst) -> Result<(), String> {
+    // TODO: semantic checks
+    Ok(())
 }
