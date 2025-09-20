@@ -60,15 +60,13 @@ pub fn parse_tokens_with_spans(input: &str, tokens: &[(Token, Range<usize>)]) ->
             i += 1;
             // Identifier (module name)
             if i < tokens.len() && tokens[i].0 == Token::Identifier {
-                let (ref t, ref tspan) = tokens[i];
-                let tlex = input.get(tspan.clone()).unwrap_or("").to_string();
-                let (tline, tcol) = get_line_col(input, tspan.start);
+                // (tspan assignment removed; inlined below)
                 module_children.push(CstNode {
                     node_type: "ModuleName".to_string(),
-                    kind: format!("{:?}", t),
-                    lexeme: tlex,
-                    line: tline,
-                    column: tcol,
+                    kind: format!("{:?}", &tokens[i].0),
+                    lexeme: input.get(tokens[i].1.clone()).unwrap_or("").to_string(),
+                    line: get_line_col(input, tokens[i].1.start).0,
+                    column: get_line_col(input, tokens[i].1.start).1,
                     children: Vec::new(),
                 });
                 i += 1;
@@ -77,13 +75,11 @@ pub fn parse_tokens_with_spans(input: &str, tokens: &[(Token, Range<usize>)]) ->
             if i < tokens.len() && tokens[i].0 == Token::LeftParen {
                 let mut port_children = Vec::new();
                 // LeftParen
-                let (ref t, ref tspan) = tokens[i];
-                let tlex = input.get(tspan.clone()).unwrap_or("").to_string();
-                let (tline, tcol) = get_line_col(input, tspan.start);
+                // (tspan assignment removed; inlined below)
                 i += 1;
                 // Group ports: (input/output/inout ... Identifier ... ,)
                 while i < tokens.len() && tokens[i].0 != Token::RightParen {
-                    let start = i;
+                    let _start = i;
                     if matches!(tokens[i].0, Token::Input | Token::Output | Token::Inout) {
                         let dir_token = &tokens[i];
                         let (dir, dir_span) = dir_token;
@@ -143,31 +139,28 @@ pub fn parse_tokens_with_spans(input: &str, tokens: &[(Token, Range<usize>)]) ->
                         }
                     }
                     // Fallback: add as generic token
-                    let (ref t, ref tspan) = tokens[i];
-                    let tlex = input.get(tspan.clone()).unwrap_or("").to_string();
-                    let (tline, tcol) = get_line_col(input, tspan.start);
+                    // Do not assign unused variables, just use directly in CstNode
+                    let tspan = &tokens[i].1;
                     port_children.push(CstNode {
                         node_type: "Token".to_string(),
-                        kind: format!("{:?}", t),
-                        lexeme: tlex,
-                        line: tline,
-                        column: tcol,
+                        kind: format!("{:?}", &tokens[i].0),
+                        lexeme: input.get(tspan.clone()).unwrap_or("").to_string(),
+                        line: get_line_col(input, tspan.start).0,
+                        column: get_line_col(input, tspan.start).1,
                         children: Vec::new(),
                     });
                     i += 1;
                 }
                 // RightParen
                 if i < tokens.len() && tokens[i].0 == Token::RightParen {
-                    let (ref t, ref tspan) = tokens[i];
-                    let tlex = input.get(tspan.clone()).unwrap_or("").to_string();
-                    let (tline, tcol) = get_line_col(input, tspan.start);
+                    let tspan = &tokens[i].1;
                     i += 1;
                     port_children.push(CstNode {
                         node_type: "Paren".to_string(),
-                        kind: format!("{:?}", t),
-                        lexeme: tlex,
-                        line: tline,
-                        column: tcol,
+                        kind: format!("{:?}", &tokens[i].0),
+                        lexeme: input.get(tspan.clone()).unwrap_or("").to_string(),
+                        line: get_line_col(input, tspan.start).0,
+                        column: get_line_col(input, tspan.start).1,
                         children: Vec::new(),
                     });
                 }
@@ -202,7 +195,7 @@ pub fn parse_tokens_with_spans(input: &str, tokens: &[(Token, Range<usize>)]) ->
                 if i+4 <= tokens.len() && tokens[i].0 == Token::AssignKeyword && tokens[i+1].0 == Token::Identifier && tokens[i+2].0 == Token::Assign {
                     let mut assign_kids = Vec::new();
                     for j in 0..5 { // assign, id, =, expr, ;
-                        let (ref t, ref tspan) = tokens[i+j];
+                        let (ref _t, ref tspan) = &tokens[i+j];
                         let tlex = input.get(tspan.clone()).unwrap_or("").to_string();
                         let (tline, tcol) = get_line_col(input, tspan.start);
                         assign_kids.push(CstNode {
@@ -229,7 +222,7 @@ pub fn parse_tokens_with_spans(input: &str, tokens: &[(Token, Range<usize>)]) ->
                 if i+5 <= tokens.len() && tokens[i].0 == Token::Identifier && tokens[i+1].0 == Token::Identifier && tokens[i+2].0 == Token::LeftParen {
                     let mut inst_kids = Vec::new();
                     for j in 0..2 { // module name, instance name
-                        let (ref t, ref tspan) = tokens[i+j];
+                        let (ref _t, ref tspan) = &tokens[i+j];
                         let tlex = input.get(tspan.clone()).unwrap_or("").to_string();
                         let (tline, tcol) = get_line_col(input, tspan.start);
                         inst_kids.push(CstNode {
