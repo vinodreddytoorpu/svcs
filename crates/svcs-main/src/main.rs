@@ -1,6 +1,8 @@
 use anyhow::Result;
 use svcs_cli::Args;
 use svcs_logger::{Logger, log_stage, log_file_processing};
+use std::fs;
+use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
     // Parse command line arguments
@@ -68,25 +70,40 @@ fn process_file_preprocessing(file: &std::path::Path) -> Result<()> {
 
 fn process_file_lexing(file: &std::path::Path) -> Result<()> {
     tracing::debug!("Lexing: {}", file.display());
-    
+
     // Read the file content
     let content = std::fs::read_to_string(file)?;
-    
+
     // Create lexer with all default plugins
     let mut lexer = svcs_lexer::create_default_lexer(&content, file.display().to_string());
-    
+
     // Tokenize with statistics
     match lexer.tokenize_with_stats() {
-        Ok((tokens, stats)) => {
+        Ok((tokens, _stats)) => {
             tracing::info!("Generated {} tokens from {}", tokens.len(), file.display());
-            
-            // Log detailed statistics if debug level
-            if tracing::enabled!(tracing::Level::DEBUG) {
-                for (category, count) in &stats.category_counts {
-                    tracing::debug!("  {}: {} tokens", category, count);
-                }
+
+            // Prepare output directory for tokens
+            let mut out_dir = PathBuf::from("out/lexer/tokens");
+            if !out_dir.exists() {
+                fs::create_dir_all(&out_dir)?;
             }
-            
+
+            // Use full file name with extension plus ".tokens" suffix
+            let file_name = file.file_name()
+                .and_then(|s| s.to_str())
+                .unwrap_or("unknown");
+            out_dir.push(format!("{}.tokens", file_name));
+
+            // Write tokens to file
+            let mut token_lines = Vec::new();
+            for (token, span) in &tokens {
+                let text = &content[span.clone()];
+                token_lines.push(format!("Token: {:?}, Text: '{}'", token, text));
+            }
+            fs::write(&out_dir, token_lines.join("\n"))?;
+
+            tracing::info!("Tokens written to file: {}", out_dir.display());
+
             Ok(())
         }
         Err(e) => {
