@@ -68,9 +68,34 @@ fn process_file_preprocessing(file: &std::path::Path) -> Result<()> {
 
 fn process_file_lexing(file: &std::path::Path) -> Result<()> {
     tracing::debug!("Lexing: {}", file.display());
-    // TODO: Call svcs-lexer crate
-    Ok(())
+    
+    // Read the file content
+    let content = std::fs::read_to_string(file)?;
+    
+    // Create lexer with all default plugins
+    let mut lexer = svcs_lexer::create_default_lexer(&content, file.display().to_string());
+    
+    // Tokenize with statistics
+    match lexer.tokenize_with_stats() {
+        Ok((tokens, stats)) => {
+            tracing::info!("Generated {} tokens from {}", tokens.len(), file.display());
+            
+            // Log detailed statistics if debug level
+            if tracing::enabled!(tracing::Level::DEBUG) {
+                for (category, count) in &stats.category_counts {
+                    tracing::debug!("  {}: {} tokens", category, count);
+                }
+            }
+            
+            Ok(())
+        }
+        Err(e) => {
+            tracing::error!("Lexical analysis failed for {}: {}", file.display(), e);
+            Err(anyhow::anyhow!("Lexical analysis failed: {}", e))
+        }
+    }
 }
+
 
 fn process_file_parsing(file: &std::path::Path) -> Result<()> {
     tracing::debug!("Parsing: {}", file.display());

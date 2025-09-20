@@ -8,6 +8,19 @@ repository.workspace = true
 description = "Lexical analysis for SystemVerilog"
 
 [dependencies]
+logos.workspace = true
+once_cell.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
 serde.workspace = true
+toml.workspace = true
+
+[features]
+default = ["all-plugins"]
+all-plugins = ["module-plugin", "interface-plugin", "datatype-plugin", "control-plugin", "operator-plugin", "general-plugin"]
+module-plugin = []
+interface-plugin = []
+datatype-plugin = []
+control-plugin = []
+operator-plugin = []
+general-plugin = []
