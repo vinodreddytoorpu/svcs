@@ -1,64 +1,57 @@
+
 # SVCS – SystemVerilog Compiler and Simulator
 
-**SVCS is a modular, Rust-based compiler and simulator for SystemVerilog source files. It provides a complete end-to-end toolchain, from preprocessing through semantic analysis, with a flexible command-line interface and robust logging.**
+**SVCS is a modular, Rust-based compiler and simulator for SystemVerilog. It provides a full toolchain from preprocessing to semantic analysis, with a modern CST (Concrete Syntax Tree) and advanced language support.**
 
-![alt text](docs/compilation.png)
+![Compilation Flow](docs/compilation.png)
 
-## Features
+## Key Features
 
 ### Modular Architecture
+- Each compilation stage is a separate crate:
+  - **svcs-preprocessor**: Handles `define`, `include`, and preprocessing directives.
+  - **svcs-lexer**: Lexical analysis with robust SystemVerilog keyword/token support.
+  - **svcs-parser**: Builds a detailed CST, grouping ports, assignments, module instances, and more.
+  - **svcs-analyzer**: Semantic checks and analysis.
+  - **svcs-logger**: Advanced logging for all stages.
 
-  - Each compilation stage is implemented as its own crate:
-
-  - svcs-preprocessor: Handles \define, include`, and other preprocessing directives
-
-  - svcs-lexer: Performs lexical analysis to generate tokens
-
-  - svcs-parser: Builds an abstract syntax tree (AST) from tokens
-
-  - svcs-analyzer: Conducts semantic checks on the AST
+### Language Support
+- Supports SystemVerilog modules, ports, assignments, module instantiations, and many keywords.
+- CST groups:
+  - Ports (input/output/inout) as `Port` nodes under `PortList`.
+  - Assignments as `AssignStatement` nodes.
+  - Module instantiations as `Instance` nodes.
+  - All tokens include type, lexeme, line, and column.
+- Easily extensible for always blocks, parameter lists, and more.
 
 ### Command-Line Interface
+- Multiple input files: `-i file1.sv file2.sv ...`
+- Directory processing: `--dir src/`
+- Custom log directory: `--log-dir logs/`
+- Log level control: `--log-level debug|info|warn|error`
 
-  - Uses clap to support:
-
-  - Multiple input files: -i file1.sv file2.sv ...
-
-  - Directory processing: --dir src/
-
-  - Custom log directory: --log-dir logs/
-
-  - Log level control: --log-level debug|info|warn|error
-
-### Comprehensive Logging
-
-  - Powered by tracing and tracing-subscriber:
-
-  - Timestamped log files in out/YYYYMMDD_HHMMSS.log
-
-  - Always-current latest.log reflecting the final build output
-
-  - Dual console and file output with thread IDs, file/line info, and configurable formatting
-
-  - Cargo Workspace
-
-  - Shared dependencies and versions are managed centrally:
-
-  - Single Cargo.toml workspace manifest
-
-  - Individual Cargo.toml for each crate with minimal boilerplate
-
-  - Scalable and Testable
-  
-  - Easy to add new compilation stages, run unit and integration tests for each crate, and extend functionality.
+### Logging & Workspace
+- Timestamped log files and always-current `latest.log`
+- Dual console and file output with rich formatting
+- Cargo workspace for easy dependency and crate management
 
 ## Quick Start
 
-**Clone the repository** 
-```
-git clone https://github.com/yourusername/svcs.git
-
+```sh
+git clone https://github.com/vinodreddytoorpu/svcs.git
 cd svcs
+cargo build
+
+# Run SVCS on one or more SystemVerilog files
+cargo run --bin svcs -- -i systemverilog/examples/full_adder.sv
+
+# Process all .sv files in a directory
+cargo run --bin svcs -- --dir systemverilog/examples/
+```
+
+## Example
+
+See `systemverilog/examples/full_adder.sv` for a full adder using two half adders. The CST output groups ports, assignments, and instances for easy analysis.
 
 cargo build
 
