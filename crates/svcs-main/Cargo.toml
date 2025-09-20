@@ -1,0 +1,26 @@
+[package]
+name = "svcs"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
+
+[[bin]]
+name = "svcs"
+path = "src/main.rs"
+
+[dependencies]
+# Workspace dependencies
+clap.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+
+# Internal crates
+svcs-cli.workspace = true
+svcs-lexer.workspace = true
+svcs-parser.workspace = true
+svcs-preprocessor.workspace = true
+svcs-analyzer.workspace = true
+svcs-logger.workspace = true

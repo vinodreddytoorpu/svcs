@@ -1,0 +1,13 @@
+[package]
+name = "svcs-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Command line interface for SVCS compiler"
+
+[dependencies]
+clap.workspace = true
+serde.workspace = true
+thiserror.workspace = true

@@ -1,0 +1,15 @@
+[package]
+name = "svcs-analyzer"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Semantic analysis for SystemVerilog"
+
+[dependencies]
+tracing.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+svcs-parser.workspace = true
+svcs-lexer.workspace = true

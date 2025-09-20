@@ -1,0 +1,39 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/svcs-main",
+    "crates/svcs-cli",
+    "crates/svcs-lexer", 
+    "crates/svcs-parser",
+    "crates/svcs-preprocessor",
+    "crates/svcs-analyzer",
+    "crates/svcs-logger",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/yourusername/svcs"
+description = "SystemVerilog Compiler and Simulator"
+
+[workspace.dependencies]
+# Common dependencies used across crates
+clap = { version = "4.0", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "time", "env-filter", "chrono"] }
+tracing-appender = "0.2"
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.0", features = ["full"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Internal crates
+svcs-cli = { path = "crates/svcs-cli" }
+svcs-lexer = { path = "crates/svcs-lexer" }
+svcs-parser = { path = "crates/svcs-parser" }
+svcs-preprocessor = { path = "crates/svcs-preprocessor" }
+svcs-analyzer = { path = "crates/svcs-analyzer" }
+svcs-logger = { path = "crates/svcs-logger" }
